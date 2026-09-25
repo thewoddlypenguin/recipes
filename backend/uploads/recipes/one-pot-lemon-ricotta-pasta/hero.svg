@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#E8EBDD"/>
+      <stop offset="0.55" stop-color="#D9E2CE"/>
+      <stop offset="1" stop-color="#C9D6BD"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#g)"/>
+  <circle cx="660" cy="110" r="150" fill="#F6F2E9" opacity="0.55"/>
+  <circle cx="90" cy="520" r="120" fill="#F6F2E9" opacity="0.4"/>
+  <text x="400" y="300" font-size="140" text-anchor="middle">🍋</text>
+  <text x="400" y="420" font-family="Georgia, serif" font-size="34" fill="#4A4638" text-anchor="middle">One Pot Lemon Ricotta Pasta</text>
+  <text x="400" y="470" font-family="Georgia, serif" font-size="20" fill="#7C7767" text-anchor="middle" font-style="italic">Mikkelsen Family Recipes</text>
+</svg>

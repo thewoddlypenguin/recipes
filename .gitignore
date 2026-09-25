@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# Node
+node_modules/
+frontend/dist/
+
+# Environment / secrets
+.env
+.env.local
+.env.*.local
+
+# Local dev databases
+*.db
+*.sqlite3
+
+# Uploads: persistent server data. Keep folder structure, ignore real content.
+uploads/recipes/**
+!uploads/recipes/.gitkeep
+uploads/wordpress-import/**
+!uploads/wordpress-import/2025/.gitkeep
+!uploads/wordpress-import/2026/.gitkeep
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.vscode/

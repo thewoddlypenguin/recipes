@@ -1,0 +1,32 @@
+[
+  {
+    "content": "[setup-1] Repo scaffolding: dirs, .gitignore, .env.example, docker-compose.yml, Dockerfiles, git init",
+    "id": "setup-1",
+    "status": "completed"
+  },
+  {
+    "content": "[backend-2] FastAPI core, models, schemas, alembic migration, API routes (auth/recipes/terms/uploads/weekly-menu)",
+    "id": "backend-2",
+    "status": "completed"
+  },
+  {
+    "content": "[seed-3] Seed data (6 recipes, SVG placeholders, admin user) + WordPress import scripts",
+    "id": "seed-3",
+    "status": "completed"
+  },
+  {
+    "content": "[frontend-4] React app: scaffold, layout, browse, detail, cook mode, admin forms, weekly menu, login",
+    "id": "frontend-4",
+    "status": "pending"
+  },
+  {
+    "content": "[verify-5] Smoke test backend (sqlite+seed+curl), build frontend, fix issues, docker compose config check",
+    "id": "verify-5",
+    "status": "in_progress"
+  },
+  {
+    "content": "[docs-6] README, docs/deployment.md, database-schema.md, wordpress-migration-notes.md, project context",
+    "id": "docs-6",
+    "status": "pending"
+  }
+]
