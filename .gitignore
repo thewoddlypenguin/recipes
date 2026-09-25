@@ -18,6 +18,8 @@ frontend/dist/
 # Local dev databases
 *.db
 *.sqlite3
+backend/uploads/
+backend/test_uploads/
 
 # Uploads: persistent server data. Keep folder structure, ignore real content.
 uploads/recipes/**

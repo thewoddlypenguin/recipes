@@ -1,0 +1,72 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ["./index.html", "./src/**/*.{ts,tsx}"],
+  theme: {
+    extend: {
+      colors: {
+        cream: "#F6F2E9",
+        sand: {
+          100: "#EFEAE0",
+          200: "#E4DDD0",
+          300: "#D6CDBB",
+          400: "#BEB29B",
+        },
+        charcoal: "#2E2A24",
+        sage: {
+          50: "#F1F4EE",
+          100: "#E3EAD9",
+          200: "#C7D5B7",
+          300: "#A6BD94",
+          400: "#8FAE7E",
+          500: "#7D9B72",
+          600: "#6B8760",
+          700: "#586F4F",
+          800: "#475A40",
+          900: "#3A4734",
+        },
+        terra: {
+          50: "#FBF1EB",
+          100: "#F5DFD2",
+          200: "#E9BFA6",
+          300: "#DDA07C",
+          400: "#D08259",
+          500: "#BC6437",
+          600: "#A5522B",
+          700: "#8E4526",
+          800: "#743923",
+          900: "#5F2F20",
+        },
+        dusk: {
+          50: "#F0F5F8",
+          100: "#E2EAF0",
+          200: "#C2D4E0",
+          300: "#9DB8CC",
+          400: "#7A9BB5",
+          500: "#5B7F97",
+          600: "#4A6980",
+          700: "#3D5569",
+          800: "#334555",
+          900: "#2B3947",
+        },
+      },
+      fontFamily: {
+        sans: [
+          "ui-sans-serif",
+          "system-ui",
+          "-apple-system",
+          "Segoe UI",
+          "Roboto",
+          "Helvetica Neue",
+          "Arial",
+          "sans-serif",
+        ],
+        display: ["Georgia", "Cambria", "Times New Roman", "serif"],
+      },
+      boxShadow: {
+        card: "0 1px 3px rgba(46,42,36,0.08), 0 4px 14px rgba(46,42,36,0.06)",
+        "card-lg": "0 2px 6px rgba(46,42,36,0.10), 0 10px 28px rgba(46,42,36,0.10)",
+      },
+    },
+  },
+  plugins: [],
+};

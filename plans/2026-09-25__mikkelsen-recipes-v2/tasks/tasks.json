@@ -17,7 +17,7 @@
   {
     "content": "[frontend-4] React app: scaffold, layout, browse, detail, cook mode, admin forms, weekly menu, login",
     "id": "frontend-4",
-    "status": "pending"
+    "status": "completed"
   },
   {
     "content": "[verify-5] Smoke test backend (sqlite+seed+curl), build frontend, fix issues, docker compose config check",
@@ -27,6 +27,6 @@
   {
     "content": "[docs-6] README, docs/deployment.md, database-schema.md, wordpress-migration-notes.md, project context",
     "id": "docs-6",
-    "status": "pending"
+    "status": "in_progress"
   }
 ]

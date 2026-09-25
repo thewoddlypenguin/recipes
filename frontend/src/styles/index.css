@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply bg-cream text-charcoal antialiased;
+  }
+  body {
+    @apply font-sans;
+  }
+  /* Visible, accessible focus states */
+  :focus-visible {
+    @apply outline-none ring-2 ring-sage-500 ring-offset-2 ring-offset-cream rounded;
+  }
+  input,
+  select,
+  textarea {
+    @apply rounded-lg border border-sand-300 bg-white px-3 py-2 text-sm text-charcoal placeholder:text-sand-400;
+  }
+  input:focus,
+  select:focus,
+  textarea:focus {
+    @apply border-sage-400 ring-1 ring-sage-400 outline-none;
+  }
+  label {
+    @apply text-sm font-medium text-charcoal;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-colors
+      disabled:cursor-not-allowed disabled:opacity-50;
+    min-height: 44px; /* large tap targets */
+  }
+  .btn-primary {
+    @apply btn bg-sage-600 text-white hover:bg-sage-700;
+  }
+  .btn-secondary {
+    @apply btn bg-dusk-500 text-white hover:bg-dusk-600;
+  }
+  .btn-outline {
+    @apply btn border border-sand-300 bg-white text-charcoal hover:bg-sand-100;
+  }
+  .btn-terra {
+    @apply btn bg-terra-600 text-white hover:bg-terra-700;
+  }
+  .card {
+    @apply rounded-2xl bg-white shadow-card;
+  }
+  .chip {
+    @apply inline-flex items-center rounded-full bg-sand-100 px-3 py-1 text-xs font-medium text-charcoal/80;
+  }
+  .field-label {
+    @apply mb-1 block text-sm font-medium;
+  }
+}
+
+/* ---------- Cooking Mode dark/terracotta theme helpers ---------- */
+.cooking-step-text {
+  @apply text-2xl sm:text-3xl leading-relaxed font-medium text-white;
+}
+
+/* ---------- Print (recipe detail + weekly menu) ---------- */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  .print-break-avoid {
+    break-inside: avoid;
+  }
+  .print-full {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+  a {
+    text-decoration: none !important;
+    color: inherit !important;
+  }
+}
