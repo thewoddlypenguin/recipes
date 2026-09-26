@@ -1,36 +1,55 @@
+# Local Workshop metadata
+.workshop/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
 # Python
 __pycache__/
 *.py[cod]
+*.pyo
+*.pyd
+.Python
 .venv/
 venv/
-*.egg-info/
+env/
 .pytest_cache/
+.mypy_cache/
+.ruff_cache/
 
 # Node
 node_modules/
-frontend/dist/
+dist/
+build/
+.vite/
 
-# Environment / secrets
-.env
-.env.local
-.env.*.local
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Local dev databases
+# Database/data/runtime
+*.sqlite
 *.db
-*.sqlite3
-backend/uploads/
-backend/test_uploads/
+postgres_data/
 
-# Uploads: persistent server data. Keep folder structure, ignore real content.
-uploads/recipes/**
+# Uploads/media - keep folder structure, not actual uploaded media
+uploads/*
+!uploads/.gitkeep
+!uploads/recipes/
 !uploads/recipes/.gitkeep
-uploads/wordpress-import/**
+!uploads/wordpress-import/
+!uploads/wordpress-import/.gitkeep
+!uploads/wordpress-import/2025/
 !uploads/wordpress-import/2025/.gitkeep
+!uploads/wordpress-import/2026/
 !uploads/wordpress-import/2026/.gitkeep
 
-# OS / editor
+# OS/editor
 .DS_Store
 Thumbs.db
-*.log
 .idea/
 .vscode/
