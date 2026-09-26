@@ -4,6 +4,7 @@ import react from "@vitejs/plugin-react";
 // Dev proxy: /api and /uploads go to the FastAPI backend.
 // In production (docker) nginx handles the same proxying.
 export default defineConfig({
+  base: "/recipes-staging/",
   plugins: [react()],
   server: {
     port: 5173,
@@ -23,3 +24,4 @@ export default defineConfig({
     sourcemap: false,
   },
 });
+
