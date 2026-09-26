@@ -1,13 +1,42 @@
 import type {
   RecipeDetail,
   RecipeInput,
+  RecipeListItem,
   RecipeListResponse,
   Term,
   User,
   WeeklyMenu,
 } from "../types";
 
-const API_BASE = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? "";
+// ---------------------------------------------------------------------------
+// API base path handling
+//
+// The app can be deployed under a sub-path (e.g. /recipes-staging/). Vite bakes
+// `base` into import.meta.env.BASE_URL, so API calls must carry the same
+// prefix, otherwise the host serves the SPA shell (HTML, HTTP 200) for
+// /api/... requests and the app crashes on unexpected payloads.
+//
+// Precedence: explicit VITE_API_BASE_URL > Vite base ("/recipes-staging/") > "".
+// ---------------------------------------------------------------------------
+
+const RAW_BASE =
+  (import.meta.env.VITE_API_BASE_URL as string | undefined) ||
+  (import.meta.env.BASE_URL as string | undefined) ||
+  "";
+
+/** API base without trailing slash: "" (root) or "/recipes-staging". */
+export const API_BASE = RAW_BASE.replace(/\/+$/, "");
+
+/**
+ * Prefix a root-relative asset path (e.g. image_url from the API) with the
+ * deployment base so <img src="/uploads/..."> resolves under a sub-path.
+ * Absolute URLs and data URLs pass through untouched.
+ */
+export function assetUrl(path: string | null | undefined): string | undefined {
+  if (!path) return undefined;
+  if (/^(https?:)?\/\//i.test(path) || path.startsWith("data:")) return path;
+  return `${API_BASE}${path.startsWith("/") ? path : `/${path}`}`;
+}
 
 const TOKEN_KEY = "mfr_token";
 
@@ -48,13 +77,21 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   if (res.status === 204) {
     return undefined as T;
   }
+
+  // Parse strictly: a 200 response that is not JSON (e.g. the SPA shell or the
+  // host site's HTML) must surface as an error, never as raw string data.
   let data: unknown = null;
   const text = await res.text();
   if (text) {
     try {
       data = JSON.parse(text);
     } catch {
-      data = text;
+      const contentType = res.headers.get("content-type") ?? "non-JSON response";
+      throw new ApiError(
+        res.status,
+        `Expected JSON from ${path} but received ${contentType}. ` +
+          "Check the API base path / reverse proxy configuration.",
+      );
     }
   }
   if (!res.ok) {
@@ -119,7 +156,30 @@ export function listRecipes(query: RecipeQuery = {}): Promise<RecipeListResponse
     }
   });
   const qs = params.toString();
-  return request<RecipeListResponse>(`/api/recipes${qs ? `?${qs}` : ""}`);
+  return request<unknown>(`/api/recipes${qs ? `?${qs}` : ""}`).then(normalizeRecipeList);
+}
+
+/**
+ * Normalize whatever the API/proxy returned into a guaranteed
+ * RecipeListResponse so a bad payload can never crash the browse page.
+ */
+function normalizeRecipeList(data: unknown): RecipeListResponse {
+  const fallback: RecipeListResponse = { items: [], total: 0, limit: 0, offset: 0 };
+  if (Array.isArray(data)) {
+    // Bare array (e.g. an older API shape): wrap it.
+    return { items: data as RecipeListItem[], total: data.length, limit: data.length, offset: 0 };
+  }
+  if (data && typeof data === "object") {
+    const obj = data as Partial<RecipeListResponse>;
+    const items = Array.isArray(obj.items) ? (obj.items as RecipeListItem[]) : [];
+    return {
+      items,
+      total: typeof obj.total === "number" ? obj.total : items.length,
+      limit: typeof obj.limit === "number" ? obj.limit : items.length,
+      offset: typeof obj.offset === "number" ? obj.offset : 0,
+    };
+  }
+  return fallback;
 }
 
 export function getRecipe(slug: string): Promise<RecipeDetail> {
@@ -147,7 +207,20 @@ export function archiveRecipe(id: number): Promise<{ ok: boolean }> {
 // ---------------------------------------------------------------------------
 
 export function listTerms(type?: string): Promise<Term[]> {
-  return request<Term[]>(`/api/terms${type ? `?type=${encodeURIComponent(type)}` : ""}`);
+  return request<unknown>(`/api/terms${type ? `?type=${encodeURIComponent(type)}` : ""}`).then(
+    normalizeTerms,
+  );
+}
+
+/** Terms must always be a plain array, whatever the API/proxy returns. */
+function normalizeTerms(data: unknown): Term[] {
+  if (Array.isArray(data)) {
+    return data as Term[];
+  }
+  if (data && typeof data === "object" && Array.isArray((data as { items?: unknown }).items)) {
+    return (data as { items: Term[] }).items;
+  }
+  return [];
 }
 
 // ---------------------------------------------------------------------------
@@ -171,7 +244,9 @@ export async function uploadImage(file: File, recipeSlug?: string): Promise<{ ur
 // ---------------------------------------------------------------------------
 
 export function getWeeklyMenu(weekStart?: string): Promise<WeeklyMenu> {
-  return request<WeeklyMenu>(`/api/weekly-menu${weekStart ? `?week_start=${weekStart}` : ""}`);
+  return request<unknown>(`/api/weekly-menu${weekStart ? `?week_start=${weekStart}` : ""}`).then(
+    normalizeMenu,
+  );
 }
 
 export interface MenuItemUpdate {
@@ -184,8 +259,21 @@ export function updateWeeklyMenu(
   menuId: number,
   payload: { title?: string; items: MenuItemUpdate[] },
 ): Promise<WeeklyMenu> {
-  return request<WeeklyMenu>(`/api/weekly-menu/${menuId}`, {
+  return request<unknown>(`/api/weekly-menu/${menuId}`, {
     method: "PUT",
     body: JSON.stringify(payload),
-  });
+  }).then(normalizeMenu);
+}
+
+/** Menu responses must always carry an items array (7 day slots). */
+function normalizeMenu(data: unknown): WeeklyMenu {
+  const fallback: WeeklyMenu = { id: 0, week_start_date: "", title: "", items: [] };
+  if (!data || typeof data !== "object") return fallback;
+  const obj = data as Partial<WeeklyMenu>;
+  return {
+    id: typeof obj.id === "number" ? obj.id : 0,
+    week_start_date: typeof obj.week_start_date === "string" ? obj.week_start_date : "",
+    title: typeof obj.title === "string" ? obj.title : "",
+    items: Array.isArray(obj.items) ? obj.items : [],
+  };
 }

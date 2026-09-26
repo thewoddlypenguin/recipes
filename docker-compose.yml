@@ -36,7 +36,14 @@ services:
       - ./uploads:/app/uploads
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        # Deployment sub-path for the SPA + API request prefix.
+        # Root deployments: leave empty. Staging: /recipes-staging/
+        VITE_BASE_PATH: ${VITE_BASE_PATH:-/}
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-}
+        VITE_JUSTINSPACE_URL: ${VITE_JUSTINSPACE_URL:-https://justinmikkelsen.com}
     restart: unless-stopped
     depends_on:
       - backend

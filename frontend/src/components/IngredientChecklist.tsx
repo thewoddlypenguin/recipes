@@ -12,6 +12,9 @@ export default function IngredientChecklist({
 }) {
   const [checked, setChecked] = useState<Set<number>>(new Set());
 
+  // Defensive: never assume the API returned a well-formed array.
+  const ingredientList = Array.isArray(ingredients) ? ingredients : [];
+
   const toggle = (index: number) => {
     setChecked((prev) => {
       const next = new Set(prev);
@@ -25,7 +28,8 @@ export default function IngredientChecklist({
   };
 
   const sections: { name: string | null; items: { ingredient: Ingredient; index: number }[] }[] = [];
-  ingredients.forEach((ingredient, index) => {
+  ingredientList.forEach((ingredient, index) => {
+    if (!ingredient || typeof ingredient !== "object") return;
     const section = ingredient.section?.trim() || null;
     const bucket = sections.find((s) => s.name === section);
     const entry = { ingredient, index };

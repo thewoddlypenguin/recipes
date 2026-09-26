@@ -33,21 +33,15 @@ interface Props {
  * Row of filter chip dropdowns (one per term type).
  * Values are term names; the backend matches name or slug.
  */
-export default function FilterBar({
-  values,
-  terms,
-  onChange,
-  onClear,
-  includeDrafts,
-  onIncludeDraftsChange,
-  canSeeDrafts,
-}: Props) {
+export default function FilterBar({ values, terms, onChange, onClear, includeDrafts, onIncludeDraftsChange, canSeeDrafts }: Props) {
+  // Defensive: a bad API/proxy payload must never crash the render.
+  const termList = Array.isArray(terms) ? terms : [];
   const hasAny = GROUPS.some((g) => values[g.key]) || (canSeeDrafts && includeDrafts);
 
   return (
     <div className="flex flex-wrap items-center gap-2">
       {GROUPS.map(({ key, label }) => {
-        const options = terms.filter((t) => t.type === key);
+        const options = termList.filter((t) => t && t.type === key);
         if (options.length === 0) return null;
         return (
           <div key={key} className="relative">

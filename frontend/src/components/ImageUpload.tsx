@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { uploadImage } from "../api/client";
+import { assetUrl, uploadImage } from "../api/client";
 
 interface Props {
   imageUrl?: string | null;
@@ -44,7 +44,7 @@ export default function ImageUpload({ imageUrl, imageAlt, recipeSlug, onChange }
       {imageUrl ? (
         <div className="space-y-2">
           <img
-            src={imageUrl}
+            src={assetUrl(imageUrl)}
             alt={imageAlt || "Recipe image preview"}
             className="aspect-[4/3] w-full rounded-xl object-cover shadow-card"
           />

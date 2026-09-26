@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import type { RecipeDetail as Recipe } from "../types";
-import { archiveRecipe, getRecipe } from "../api/client";
+import { archiveRecipe, assetUrl, getRecipe } from "../api/client";
 import RecipeQuickFacts from "../components/RecipeQuickFacts";
 import IngredientChecklist from "../components/IngredientChecklist";
 import InstructionList from "../components/InstructionList";
@@ -66,7 +66,8 @@ export default function RecipeDetailPage() {
     );
   }
 
-  const termEntries = Object.entries(recipe.terms);
+  const termEntries = Object.entries(recipe.terms ?? {});
+  const tags = Array.isArray(recipe.tags) ? recipe.tags : [];
 
   return (
     <article className="print-full mx-auto max-w-5xl">
@@ -75,7 +76,7 @@ export default function RecipeDetailPage() {
         <div className="overflow-hidden rounded-2xl bg-sand-100 shadow-card">
           {recipe.image_url ? (
             <img
-              src={recipe.image_url}
+              src={assetUrl(recipe.image_url)}
               alt={recipe.image_alt || recipe.title}
               className="aspect-[4/3] w-full object-cover"
             />
@@ -98,9 +99,9 @@ export default function RecipeDetailPage() {
             </span>
           )}
 
-          {recipe.tags.length > 0 && (
+          {tags.length > 0 && (
             <div className="mt-4 flex flex-wrap gap-1.5">
-              {recipe.tags.map((tag) => (
+              {tags.map((tag) => (
                 <span key={tag} className="chip">
                   {tag}
                 </span>
@@ -205,7 +206,7 @@ export default function RecipeDetailPage() {
                   .map(([type, names]) => (
                     <p key={type} className="flex flex-wrap items-center gap-1.5 text-sm">
                       <span className="font-medium capitalize text-charcoal/60">{type}:</span>
-                      {names.map((name) => (
+                      {(Array.isArray(names) ? names : []).map((name) => (
                         <span key={name} className={`chip ${chipColor(type)}`}>
                           {name}
                         </span>

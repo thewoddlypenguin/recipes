@@ -32,8 +32,19 @@ HTTP origin is involved.
 
 ## 2. Sub-path staging (justinmikkelsen.com/recipes-staging)
 
-If the app is mounted under `/recipes-staging` behind an existing web server
-(nginx/Caddy on the host), either:
+Set the deployment base path **before building** so the SPA and its API
+requests carry the prefix:
+
+```bash
+# in .env on the server
+VITE_BASE_PATH=/recipes-staging/
+```
+
+`docker compose build frontend` bakes it in (Vite `base` + the API client's
+request prefix), so the browser requests `/recipes-staging/api/...` and
+`/recipes-staging/uploads/...` instead of root-absolute paths.
+
+Then either:
 
 **Option A — subdomain/port proxy (simplest):** point the existing web server
 at the compose port:
@@ -47,11 +58,13 @@ location /recipes-staging/ {
 }
 ```
 
-The SPA uses client-side routing with relative-agnostic `/api` and `/uploads`
-calls. When proxying under a sub-path, prefer **Option B**:
-
 **Option B — dedicated subdomain:** `recipes-staging.justinmikkelsen.com` →
-`127.0.0.1:8080`. No path rewriting needed; this is the recommended setup.
+`127.0.0.1:8080`, with `VITE_BASE_PATH=/` in `.env`. No path rewriting needed.
+
+The frontend container also handles a **non-stripping** host proxy (one that
+forwards the full `/recipes-staging/...` path): its nginx config includes
+matching `location /recipes-staging/{api,uploads,assets}` blocks that rewrite
+to the backend and serve assets, so both proxy styles work.
 
 ## 3. Ongoing deploys
 

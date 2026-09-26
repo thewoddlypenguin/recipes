@@ -75,7 +75,7 @@ export default function CookModePage() {
     );
   }
 
-  const steps = recipe.steps;
+  const steps = Array.isArray(recipe.steps) ? recipe.steps : [];
   const step = steps[stepIndex];
   const total = steps.length;
 

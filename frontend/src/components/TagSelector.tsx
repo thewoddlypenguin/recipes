@@ -14,16 +14,18 @@ interface Props {
 export default function TagSelector({ type, label, options, selected, onToggle, onAddCustom }: Props) {
   const [custom, setCustom] = useState("");
 
+  const selectedList = Array.isArray(selected) ? selected : [];
+  const knownNames = new Set(options.map((t) => t.name.toLowerCase()));
+  const extras = selectedList.filter((s) => !knownNames.has(s.toLowerCase()));
+
+
   const add = () => {
     const name = custom.trim();
-    if (name && !selected.some((s) => s.toLowerCase() === name.toLowerCase())) {
+    if (name && !selectedList.some((s) => s.toLowerCase() === name.toLowerCase())) {
       onAddCustom(name);
     }
     setCustom("");
   };
-
-  const knownNames = new Set(options.map((t) => t.name.toLowerCase()));
-  const extras = selected.filter((s) => !knownNames.has(s.toLowerCase()));
 
   return (
     <div>

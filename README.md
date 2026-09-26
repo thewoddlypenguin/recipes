@@ -102,6 +102,7 @@ Copy `.env.example` → `.env` and fill in real values. Key variables:
 | `PUBLIC_UPLOAD_URL` | Public mount path (`/uploads`) |
 | `INITIAL_ADMIN_EMAIL` / `INITIAL_ADMIN_PASSWORD` | Seed admin credentials |
 | `CORS_ORIGINS` | Comma-separated allowed origins |
+| `VITE_BASE_PATH` | Deployment sub-path for the SPA (`/recipes-staging/` for staging, `/` for root) — baked at frontend build time |
 | `VITE_JUSTINSPACE_URL` | Header link target for “JustinSpace” |
 
 Never commit `.env`.
@@ -170,3 +171,5 @@ cd backend
 | Login always 401 | `SECRET_KEY` changed after tokens were issued — log in again; check `INITIAL_ADMIN_*` values used at seed time. |
 | CORS errors from the frontend | Add the frontend origin to `CORS_ORIGINS`, or serve both through the nginx proxy (default in compose). |
 | 413 on upload | Image exceeds 10 MB; also check nginx `client_max_body_size` (25m in `frontend/nginx.conf`). |
+| White screen, console shows `TypeError: t.filter is not a function` (or `Expected JSON from /api/... but received text/html`) | The frontend is calling root-absolute `/api/...` while deployed under a sub-path — the host serves the SPA shell (HTML, 200) and the app crashes. Set `VITE_BASE_PATH=/recipes-staging/` and rebuild the frontend image. |
+| `/favicon.ico` 404 | Harmless; the app ships `favicon.svg` linked from `index.html`. |

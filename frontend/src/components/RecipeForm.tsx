@@ -48,8 +48,9 @@ export default function RecipeForm({ initial, terms, busy, error, onSave, onArch
   const selectedTerms = useMemo(() => {
     const map = new Map<TermType, string[]>();
     if (initial) {
-      Object.entries(initial.terms).forEach(([type, names]) => {
-        map.set(type as TermType, names);
+      const grouped = initial.terms && typeof initial.terms === "object" ? initial.terms : {};
+      Object.entries(grouped).forEach(([type, names]) => {
+        map.set(type as TermType, Array.isArray(names) ? names : []);
       });
     } else {
       map.set("course", []);
@@ -63,10 +64,14 @@ export default function RecipeForm({ initial, terms, busy, error, onSave, onArch
   const [termSelection, setTermSelection] = useState<Map<TermType, string[]>>(selectedTerms);
 
   const [ingredients, setIngredients] = useState<Ingredient[]>(
-    initial?.ingredients.map((i) => ({ ...i })) ?? [],
+    Array.isArray(initial?.ingredients) ? initial!.ingredients.map((i) => ({ ...i })) : [],
   );
-  const [steps, setSteps] = useState<Step[]>(initial?.steps.map((s) => ({ ...s })) ?? []);
-  const [notes, setNotes] = useState<RecipeNote[]>(initial?.notes.map((n) => ({ ...n })) ?? []);
+  const [steps, setSteps] = useState<Step[]>(
+    Array.isArray(initial?.steps) ? initial!.steps.map((s) => ({ ...s })) : [],
+  );
+  const [notes, setNotes] = useState<RecipeNote[]>(
+    Array.isArray(initial?.notes) ? initial!.notes.map((n) => ({ ...n })) : [],
+  );
 
   const effectiveTotal = totalTouched && totalMinutes !== "" ? Number(totalMinutes) : null;
   const autoTotal =

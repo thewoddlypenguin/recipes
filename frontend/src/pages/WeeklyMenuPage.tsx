@@ -27,9 +27,10 @@ export default function WeeklyMenuPage() {
     getWeeklyMenu(toISODate(weekStart))
       .then((data) => {
         if (cancelled) return;
-        setMenu(data);
+        const menuItems = Array.isArray(data.items) ? data.items : [];
+        setMenu({ ...data, items: menuItems });
         const map = new Map<number, DraftSlot>();
-        data.items.forEach((item) => map.set(item.day_of_week, { recipe_id: item.recipe_id ?? null, note: item.note }));
+        menuItems.forEach((item) => map.set(item.day_of_week, { recipe_id: item.recipe_id ?? null, note: item.note }));
         setDraft(map);
         setDirty(false);
       })
@@ -46,7 +47,7 @@ export default function WeeklyMenuPage() {
 
   useEffect(() => {
     listRecipes({ limit: 100 })
-      .then((res) => setRecipes(res.items))
+      .then((res) => setRecipes(Array.isArray(res.items) ? res.items : []))
       .catch(() => setRecipes([]));
   }, []);
 

@@ -99,7 +99,7 @@ export default function BrowsePage() {
     };
   }, [filters, includeDrafts]);
 
-  const recipes = result?.items ?? [];
+  const recipes = Array.isArray(result?.items) ? result!.items : [];
   const hasAnyFilter = Boolean(
     filters.q || filters.course || filters.cuisine || filters.diet || filters.ingredient || filters.equipment || filters.tag,
   );
