@@ -4,7 +4,6 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import BrowsePage from "./pages/BrowsePage";
 import RecipeDetailPage from "./pages/RecipeDetailPage";
 import CookModePage from "./pages/CookModePage";
-import WeeklyMenuPage from "./pages/WeeklyMenuPage";
 import LoginPage from "./pages/LoginPage";
 import RecipeFormPage from "./pages/admin/RecipeFormPage";
 
@@ -31,7 +30,6 @@ export default function App() {
       <Route element={<Layout />}>
         <Route path="/" element={<BrowsePage />} />
         <Route path="/recipes/:slug" element={<RecipeDetailPage />} />
-        <Route path="/weekly-menu" element={<WeeklyMenuPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route
           path="/admin/recipes/new"

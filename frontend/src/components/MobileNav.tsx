@@ -16,9 +16,6 @@ export default function MobileNav() {
         <Link to="/" className={item}>
           Home <span aria-hidden>→</span>
         </Link>
-        <Link to="/weekly-menu" className={item}>
-          Weekly Menu <span aria-hidden>→</span>
-        </Link>
         {isEditor && (
           <Link to="/admin/recipes/new" className={item}>
             Add Recipe <span aria-hidden>→</span>

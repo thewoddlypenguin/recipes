@@ -57,9 +57,9 @@
   }
 }
 
-/* ---------- Cooking Mode dark/terracotta theme helpers ---------- */
+/* ---------- Cooking Mode theme helpers ---------- */
 .cooking-step-text {
-  @apply text-2xl sm:text-3xl leading-relaxed font-medium text-white;
+  @apply text-2xl sm:text-3xl leading-relaxed font-medium text-charcoal;
 }
 
 /* ---------- Print (recipe detail + weekly menu) ---------- */

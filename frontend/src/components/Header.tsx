@@ -26,9 +26,6 @@ export default function Header() {
           <NavLink to="/" end className={linkClass}>
             Home
           </NavLink>
-          <NavLink to="/weekly-menu" className={linkClass}>
-            Weekly Menu
-          </NavLink>
           {isEditor && (
             <NavLink to="/admin/recipes/new" className={linkClass}>
               Add Recipe
