@@ -40,11 +40,11 @@ export default function IngredientChecklist({
     }
   });
 
-  const labelSize = size === "large" ? "text-lg sm:text-xl" : "text-[15px]";
+  const labelSize = size === "large" ? "text-base" : "text-[15px]";
   const boxSize = size === "large" ? "h-6 w-6" : "h-5 w-5";
 
   return (
-    <div className={size === "large" ? "space-y-6" : "space-y-5"}>
+    <div className={size === "large" ? "space-y-4" : "space-y-5"}>
       {sections.map((section) => (
         <fieldset key={section.name ?? "__all"} className="print-break-avoid">
           {section.name && (
@@ -52,7 +52,7 @@ export default function IngredientChecklist({
               {section.name}
             </legend>
           )}
-          <ul className={size === "large" ? "space-y-4" : "space-y-2.5"}>
+          <ul className={size === "large" ? "space-y-2" : "space-y-2.5"}>
             {section.items.map(({ ingredient, index }) => {
               const isChecked = checked.has(index);
               const text = [

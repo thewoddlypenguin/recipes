@@ -59,7 +59,7 @@
 
 /* ---------- Cooking Mode theme helpers ---------- */
 .cooking-step-text {
-  @apply text-2xl sm:text-3xl leading-relaxed font-medium text-charcoal;
+  @apply text-base leading-relaxed font-medium text-charcoal;
 }
 
 /* ---------- Print (recipe detail + weekly menu) ---------- */

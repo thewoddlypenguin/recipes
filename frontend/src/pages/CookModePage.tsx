@@ -87,7 +87,7 @@ export default function CookModePage() {
         {recipe.servings != null && <p className="mt-1 text-sm text-charcoal/60">{recipe.servings} servings</p>}
 
         {/* Two-column layout: ingredients + steps together */}
-        <div className="mt-6 grid gap-6 lg:grid-cols-[320px_1fr]">
+        <div className="mt-6 grid gap-6 lg:grid-cols-[2fr_3fr]">
           {/* Ingredients column */}
           <div className="lg:sticky lg:top-24 lg:self-start">
             <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
@@ -104,11 +104,11 @@ export default function CookModePage() {
                 <p className="py-12 text-center text-lg text-charcoal/50">This recipe has no steps yet.</p>
               ) : (
                 <div>
-                  <div className="flex flex-col items-center rounded-xl bg-gray-50 p-6 ring-1 ring-gray-200">
+                  <div className="flex flex-col items-start rounded-xl bg-gray-50 p-6 ring-1 ring-gray-200">
                     <p className="text-sm font-bold uppercase tracking-widest text-charcoal/50">
                       {stepIndex + 1} of {total}
                     </p>
-                    <p className="cooking-step-text mt-4 text-center text-charcoal">{step.body}</p>
+                    <p className="cooking-step-text mt-4 text-left text-charcoal">{step.body}</p>
 
                     {step.timer_minutes != null && step.timer_minutes > 0 && (
                       <div className="mt-6">
