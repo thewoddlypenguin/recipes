@@ -12,6 +12,6 @@
   {
     "content": "[fix-3] Sub-path build plumbing (vite base env, Dockerfile/compose args, nginx sub-path locations) + favicon; build+test+commit",
     "id": "fix-3",
-    "status": "in_progress"
+    "status": "completed"
   }
 ]

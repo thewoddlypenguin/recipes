@@ -1,0 +1,32 @@
+[
+  {
+    "content": "[routing-1] Set BrowserRouter basename from VITE_BASE_PATH in main.tsx",
+    "id": "1",
+    "status": "completed"
+  },
+  {
+    "content": "[routing-2] Add nginx SPA fallback for /recipes-staging/ sub-path",
+    "id": "2",
+    "status": "completed"
+  },
+  {
+    "content": "[weekly-1] Remove Weekly Menu from routes, nav, and page imports",
+    "id": "3",
+    "status": "completed"
+  },
+  {
+    "content": "[cook-1] Redesign CookModePage: show ingredients + steps together, light theme",
+    "id": "4",
+    "status": "completed"
+  },
+  {
+    "content": "[cook-2] Update CookingModeHeader and cooking-step-text for light theme",
+    "id": "5",
+    "status": "completed"
+  },
+  {
+    "content": "[verify] Build frontend and run backend tests to verify changes",
+    "id": "6",
+    "status": "completed"
+  }
+]

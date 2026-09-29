@@ -107,52 +107,57 @@ export default function BrowsePage() {
   return (
     <div>
       <div className="no-print">
-        <SearchBar value={filters.q ?? ""} onChange={(q) => setFilters({ ...filters, q })} />
+        {/* Search + filters on one row (desktop); wraps on mobile */}
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="min-w-[240px] flex-1">
+            <SearchBar value={filters.q ?? ""} onChange={(q) => setFilters({ ...filters, q })} />
+          </div>
 
-        {/* Desktop filter chips */}
-        <div className="mt-4 hidden lg:block">
-          <FilterBar
-            values={filters}
-            terms={terms}
-            onChange={setFilters}
-            onClear={clearFilters}
-            canSeeDrafts={isEditor}
-            includeDrafts={includeDrafts}
-            onIncludeDraftsChange={(include) =>
-              setSearchParams(
-                (prev) => {
-                  const params = new URLSearchParams(prev);
-                  if (include) params.set("drafts", "1");
-                  else params.delete("drafts");
-                  return params;
-                },
-                { replace: true },
-              )
-            }
-          />
-        </div>
+          {/* Desktop filter chips — inline to the right of search */}
+          <div className="hidden lg:block">
+            <FilterBar
+              values={filters}
+              terms={terms}
+              onChange={setFilters}
+              onClear={clearFilters}
+              canSeeDrafts={isEditor}
+              includeDrafts={includeDrafts}
+              onIncludeDraftsChange={(include) =>
+                setSearchParams(
+                  (prev) => {
+                    const params = new URLSearchParams(prev);
+                    if (include) params.set("drafts", "1");
+                    else params.delete("drafts");
+                    return params;
+                  },
+                  { replace: true },
+                )
+              }
+            />
+          </div>
 
-        {/* Mobile filters */}
-        <div className="mt-4 flex items-center gap-3 lg:hidden">
-          <FilterDrawer
-            values={filters}
-            terms={terms}
-            onChange={setFilters}
-            onClear={clearFilters}
-            canSeeDrafts={isEditor}
-            includeDrafts={includeDrafts}
-            onIncludeDraftsChange={(include) =>
-              setSearchParams(
-                (prev) => {
-                  const params = new URLSearchParams(prev);
-                  if (include) params.set("drafts", "1");
-                  else params.delete("drafts");
-                  return params;
-                },
-                { replace: true },
-              )
-            }
-          />
+          {/* Mobile filters — wraps below search */}
+          <div className="lg:hidden">
+            <FilterDrawer
+              values={filters}
+              terms={terms}
+              onChange={setFilters}
+              onClear={clearFilters}
+              canSeeDrafts={isEditor}
+              includeDrafts={includeDrafts}
+              onIncludeDraftsChange={(include) =>
+                setSearchParams(
+                  (prev) => {
+                    const params = new URLSearchParams(prev);
+                    if (include) params.set("drafts", "1");
+                    else params.delete("drafts");
+                    return params;
+                  },
+                  { replace: true },
+                )
+              }
+            />
+          </div>
         </div>
       </div>
 
