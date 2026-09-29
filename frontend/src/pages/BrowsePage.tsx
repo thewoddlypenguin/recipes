@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import type { RecipeListResponse, Term } from "../types";
+import type { RecipeListItem, Term } from "../types";
 import { listRecipes, listTerms } from "../api/client";
 import SearchBar from "../components/SearchBar";
 import FilterBar from "../components/FilterBar";
@@ -12,15 +12,19 @@ import { useAuth } from "../hooks/useAuth";
 
 const PAGE_SIZE = 24;
 
-/** Home / recipe browse: search + filter chips + responsive card grid. */
+/** Home / recipe browse: search + filter chips + responsive card grid with lazy-load. */
 export default function BrowsePage() {
   const { isEditor } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const [terms, setTerms] = useState<Term[]>([]);
-  const [result, setResult] = useState<RecipeListResponse | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [recipes, setRecipes] = useState<RecipeListItem[]>([]);
+  const [total, setTotal] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const debounceRef = useRef<number | null>(null);
+  const reqIdRef = useRef(0);
 
   const filters: FilterValues = useMemo(
     () => ({
@@ -67,10 +71,11 @@ export default function BrowsePage() {
     listTerms().then(setTerms).catch(() => setTerms([]));
   }, []);
 
-  // Fetch recipes whenever the query changes (debounced for typing).
+  // Fetch first page whenever the query changes (debounced for typing).
   useEffect(() => {
     const doFetch = () => {
-      setLoading(true);
+      const reqId = ++reqIdRef.current;
+      setIsInitialLoading(true);
       setError(null);
       listRecipes({
         q: filters.q || undefined,
@@ -82,10 +87,22 @@ export default function BrowsePage() {
         tag: filters.tag,
         status: includeDrafts ? "all" : undefined,
         limit: PAGE_SIZE,
+        offset: 0,
       })
-        .then(setResult)
-        .catch((err: Error) => setError(err.message))
-        .finally(() => setLoading(false));
+        .then((data) => {
+          if (reqId !== reqIdRef.current) return; // stale
+          setRecipes(data.items);
+          setTotal(data.total);
+          setHasMore(data.items.length < data.total);
+        })
+        .catch((err: Error) => {
+          if (reqId !== reqIdRef.current) return;
+          setError(err.message);
+        })
+        .finally(() => {
+          if (reqId !== reqIdRef.current) return;
+          setIsInitialLoading(false);
+        });
     };
 
     if (debounceRef.current) window.clearTimeout(debounceRef.current);
@@ -99,7 +116,61 @@ export default function BrowsePage() {
     };
   }, [filters, includeDrafts]);
 
-  const recipes = Array.isArray(result?.items) ? result!.items : [];
+  // Load next page (infinite scroll).
+  const loadMore = useCallback(() => {
+    if (isLoadingMore || !hasMore || isInitialLoading || error) return;
+
+    const reqId = reqIdRef.current;
+    setIsLoadingMore(true);
+    listRecipes({
+      q: filters.q || undefined,
+      course: filters.course,
+      cuisine: filters.cuisine,
+      diet: filters.diet,
+      ingredient: filters.ingredient,
+      equipment: filters.equipment,
+      tag: filters.tag,
+      status: includeDrafts ? "all" : undefined,
+      limit: PAGE_SIZE,
+      offset: recipes.length,
+    })
+      .then((data) => {
+        if (reqId !== reqIdRef.current) return; // stale
+        setRecipes((prev) => {
+          const seen = new Set(prev.map((r) => r.id));
+          const fresh = data.items.filter((r) => !seen.has(r.id));
+          return [...prev, ...fresh];
+        });
+        setTotal(data.total);
+        setHasMore(data.offset + data.items.length < data.total);
+      })
+      .catch((err: Error) => {
+        if (reqId !== reqIdRef.current) return;
+        setError(err.message);
+      })
+      .finally(() => {
+        if (reqId !== reqIdRef.current) return;
+        setIsLoadingMore(false);
+      });
+  }, [isLoadingMore, hasMore, isInitialLoading, error, filters, includeDrafts, recipes.length]);
+
+  // IntersectionObserver sentinel for infinite scroll.
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          loadMore();
+        }
+      },
+      { rootMargin: "200px" },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [loadMore]);
+
   const hasAnyFilter = Boolean(
     filters.q || filters.course || filters.cuisine || filters.diet || filters.ingredient || filters.equipment || filters.tag,
   );
@@ -165,9 +236,9 @@ export default function BrowsePage() {
         <h1 className="font-display text-xl font-semibold sm:text-2xl">
           {hasAnyFilter ? "Search results" : "Family Recipes"}
         </h1>
-        {result && (
+        {(total > 0 || !isInitialLoading) && (
           <p className="text-sm text-charcoal/60" aria-live="polite">
-            {loading ? "Searching…" : `${result.total} recipe${result.total === 1 ? "" : "s"}`}
+            {isInitialLoading ? "Searching…" : `${total} recipe${total === 1 ? "" : "s"}`}
           </p>
         )}
       </div>
@@ -178,20 +249,29 @@ export default function BrowsePage() {
             Couldn't load recipes: {error}
           </div>
         )}
-        {!error && loading && !result && (
+        {!error && isInitialLoading && (
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" aria-hidden>
             {Array.from({ length: 8 }).map((_, i) => (
               <div key={i} className="card h-72 animate-pulse bg-white/70" />
             ))}
           </div>
         )}
-        {!error && result && recipes.length === 0 && <EmptyState onClearFilters={hasAnyFilter ? clearFilters : undefined} />}
+        {!error && !isInitialLoading && recipes.length === 0 && (
+          <EmptyState onClearFilters={hasAnyFilter ? clearFilters : undefined} />
+        )}
         {!error && recipes.length > 0 && (
           <>
             <RecipeGrid recipes={recipes} />
-            {result && result.total > PAGE_SIZE && (
+            {/* Infinite scroll sentinel */}
+            <div ref={sentinelRef} className="h-4" aria-hidden />
+            {isLoadingMore && (
+              <p className="mt-6 text-center text-sm text-charcoal/50" role="status">
+                Loading more recipes…
+              </p>
+            )}
+            {!hasMore && total > PAGE_SIZE && (
               <p className="mt-6 text-center text-sm text-charcoal/50">
-                Showing {recipes.length} of {result.total} recipes — refine your search to see more.
+                Showing all {total} recipes
               </p>
             )}
           </>
