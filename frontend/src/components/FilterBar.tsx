@@ -13,9 +13,6 @@ export interface FilterValues {
 const GROUPS: { key: TermType; label: string }[] = [
   { key: "course", label: "Course" },
   { key: "cuisine", label: "Cuisine" },
-  { key: "diet", label: "Diet" },
-  { key: "ingredient", label: "Ingredient" },
-  { key: "equipment", label: "Equipment" },
   { key: "tag", label: "Tags" },
 ];
 
